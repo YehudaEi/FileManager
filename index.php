@@ -1,48 +1,52 @@
 <?php
+//Default Configuration
 $CONFIG = '{"lang":"he","error_reporting":true,"show_hidden":true,"hide_Cols":false,"calc_folder":true}';
 
 /**
- * H3K | Tiny File Manager V2.3.6.8
+ * H3K | Tiny File Manager V2.3.8.2
  * CCP Programmers | ccpprogrammers@gmail.com
  * https://tinyfilemanager.github.io
  */
 
 //TFM version
-define('VERSION', '2.3.6.8'); 
+define('VERSION', '2.3.8.3'); 
 
 //Application Title
 define('APP_TITLE', 'סייר קבצים - יהודה אייזנברג');
 
-$fileManagerConfig = array(
-    "use_auth" => true, 
-    "auth_users" => array( //'username' => password_hash('סיסמה כלשהיא', PASSWORD_DEFAULT)
-        'admin' => '$2y$10$/K.hjNr84lLNDt8fTXjoI.DBp6PpeyoJ.mGwrrLuCZfAwfSAGqhOW', //admin@123
-        'user' => '$2y$10$Fg6Dz8oH9fPoZ2jJan5tZuv6Z4Kp7avtQ9bDfrdRntXtPeiMAZyGO' //12345
-    ),
-    "readonly_users" => array(),
-    "ip_ruleset" => file_exists("ips.json") ? 'AND' : 'OFF',
-    "ip_silent" => true,
-    "ip_whitelist" => (file_exists("ips.json") ? json_decode(file_get_contents("ips.json"), true) : array(
-        '127.0.0.1',    // local ipv4
-        '::1'           // local ipv6
-    )),
-    "ip_blacklist" => array(
-        '0.0.0.0',      // non-routable meta ipv4
-        '::'            // non-routable meta ipv6
-    ),
-    "directories_users" => array(),
-    "use_highlightjs" => true,
-    "highlightjs_style" => 'vs',
-    "edit_files" => true,
-    "default_timezone" => 'Asia/Jerusalem',
-    "root_path" => $_SERVER['DOCUMENT_ROOT'],
-    "root_url" => '',
-    "http_host" => $_SERVER['HTTP_HOST'],
-    "iconv_input_encoding" => 'UTF-8',
-    "datetime_format" => 'd/m/y H:i',
-    "allowed_extensions" => '',
-    "favicon_path" => '?img=favicon',
-    "sticky_navbar" => true,
+$fileManagerConfig =array (
+  'use_auth' => true,
+  'auth_users' => 
+  array( //'username' => password_hash('סיסמה כלשהיא', PASSWORD_DEFAULT)
+    'admin' => '$2y$10$/K.hjNr84lLNDt8fTXjoI.DBp6PpeyoJ.mGwrrLuCZfAwfSAGqhOW', //admin@123
+    'user' => '$2y$10$Fg6Dz8oH9fPoZ2jJan5tZuv6Z4Kp7avtQ9bDfrdRntXtPeiMAZyGO' //12345
+  ),
+  'readonly_users' => 
+  array (
+  ),
+  'ip_ruleset' => file_exists("/var/www/ips.json") ? 'AND' : 'OFF',
+  'ip_silent' => true,
+  'ip_whitelist' => (file_exists("/var/www/ips.json") ? json_decode(file_get_contents("/var/www/ips.json"), true) : array('127.0.0.1','::1')),
+  'ip_blacklist' => 
+  array (
+    0 => '0.0.0.0',
+    1 => '::',
+  ),
+  'directories_users' => 
+  array (
+  ),
+  'use_highlightjs' => true,
+  'highlightjs_style' => 'vs',
+  'edit_files' => true,
+  'default_timezone' => 'Asia/Jerusalem',
+  'root_path' => $_SERVER['DOCUMENT_ROOT'],
+  'root_url' => '',
+  'http_host' => $_SERVER['HTTP_HOST'],
+  'iconv_input_encoding' => 'UTF-8',
+  'datetime_format' => 'd/m/yH:i',
+  'allowed_extensions' => '',
+  'favicon_path' => '?img=favicon',
+  'sticky_navbar' => true,
 );
 
 if($fileManagerConfig == null){
@@ -80,6 +84,8 @@ if($fileManagerConfig == null){
     die();
 }
 
+$fileManagerConfig['datetime_format'] = "d/m/y H:i";
+
 $GLOBALS['exclude_items'] = array();
 
 // Online office Docs Viewer
@@ -91,7 +97,6 @@ $GLOBALS['online_viewer'] = 'google';
 
 // max upload file size
 define('MAX_UPLOAD_SIZE', '2048');
-
 
 //--- EDIT BELOW CAREFULLY OR DO NOT EDIT AT ALL
 //Check of update
@@ -234,6 +239,7 @@ if($fileManagerConfig['ip_ruleset'] != 'OFF'){
     }
     if($proceed == false){
         trigger_error('User connection denied from: ' . $clientIp, E_USER_WARNING);
+        
         if($fileManagerConfig['ip_silent'] == false){
             fm_set_msg('Access denied. IP restriction applicable', 'error');
             fm_show_header_login();
@@ -328,7 +334,7 @@ if ($fileManagerConfig['use_auth'] && isset($_SESSION[FM_SESSION_ID]['logged']))
 $fileManagerConfig['root_path'] = rtrim($fileManagerConfig['root_path'], '\\/');
 $fileManagerConfig['root_path'] = str_replace('\\', '/', $fileManagerConfig['root_path']);
 if (!@is_dir($fileManagerConfig['root_path'])) {
-    echo "<h1>Root path \"{$fileManagerConfig['root_path']}\" not found!</h1>";
+    echo "<h1>הכתובת \"{$fileManagerConfig['root_path']}\" לא נמצאה!</h1>";
     exit;
 }
 
@@ -380,7 +386,7 @@ if (isset($_POST['ajax']) && !FM_READONLY) {
         // check path
         if (!is_dir($path)) {
             //fm_redirect(FM_SELF_URL . '?p=');
-            die('ERROR! this is dir...');
+            die('שגיאה! זו תיקייה...');
         }
         $file = $_GET['edit'];
         $file = fm_clean_path($file);
@@ -388,7 +394,7 @@ if (isset($_POST['ajax']) && !FM_READONLY) {
         if ($file == '' || !is_file($path . '/' . $file)) {
             //fm_set_msg('הקובץ לא נמצא', 'error');
             //fm_redirect(FM_SELF_URL . '?p=' . urlencode(FM_PATH));
-            die('ERROR! file not found...');
+            die('שגיאה! הקובץ לא נמצא...');
         }
         header('X-XSS-Protection:0'); 
         $file_path = $path . '/' . $file;
@@ -778,9 +784,9 @@ if (!empty($_FILES) && !FM_READONLY) {
 
     if (empty($f['file']['error']) && !empty($tmp_name) && $tmp_name != 'none' && $isFileAllowed) {
         if (move_uploaded_file($tmp_name, $fullPath)) {
-            die('Successfully uploaded');
+            die('העלאה הצליחה!');
         } else {
-            die(sprintf('Error while uploading files. Uploaded files: %s', $uploads));
+            die(sprintf('שגיאה בהעלאת הקבצים. קבצים שהועלו: %s', $uploads));
         }
     }
     exit();
@@ -1102,10 +1108,10 @@ if (isset($_GET['upload']) && !FM_READONLY) {
                     let _path = (file.fullPath) ? file.fullPath : file.name;
                     document.getElementById("fullpath").value = _path;
                     xhr.ontimeout = (function() {
-                        alert('Error: Server Timeout');
+                        alert('שגיאה! השרת לא מגיב');
                     });
                 }).on("success", function (res) {
-                    console.log('Upload Status >> ', res.status);
+                    console.log('סטטוס ההעלאה >> ', res.status);
                 }).on("error", function(file, response) {
                     alert(response);
                 });
@@ -1337,7 +1343,7 @@ if (isset($_GET['help'])) {
                     <div class="col-xs-12 col-sm-6">
                         <p><h3><a href="https://github.com/prasathmani/tinyfilemanager" target="_blank" class="app-v-title"> Tiny File Manager <?php echo VERSION; ?></a></h3></p>
                         <p>Author: Yehuda Eisenberg</p>
-                        <p>Mail Us: <a href="mailto:yehuda@yehudae.ga">yehuda@yehudae.ga</a> </p>
+                        <p>Mail Us: <a href="mailto:yehuda@yehudae.net">yehuda@yehudae.net</a> </p>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="card">
@@ -1577,7 +1583,7 @@ if (isset($_GET['view']) && !($_GET['view'] == "fm.php" && FM_READONLY)) {
 if (isset($_GET['edit']) && !FM_READONLY) {
     
     $file = $_GET['edit'];
-    $file = fm_clean_path($file);
+    $file = fm_clean_path($file, false);
     $file = str_replace('/', '', $file);
     if ($file == '' || !is_file($path . '/' . $file)) {
         fm_set_msg('הקובץ לא נמצא', 'error');
@@ -2167,9 +2173,9 @@ function get_absolute_path($path) {
  * @param string $path
  * @return string
  */
-function fm_clean_path($path)
+function fm_clean_path($path, $trim = true)
 {
-    $path = trim($path);
+    $path = $trim ? trim($path) : $path;
     $path = trim($path, '\\/');
     $path = str_replace(array('../', '..\\'), '', $path);
     $path =  get_absolute_path($path);
@@ -2237,10 +2243,12 @@ function fm_get_size($file)
     if (!isset($iswin)) {
         $iswin = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN');
     }
+
     static $exec_works;
     if (!isset($exec_works)) {
         $exec_works = (function_exists('exec') && !ini_get('safe_mode') && @exec('echo EXEC') == 'EXEC');
     }
+
     // try a shell command
     if ($exec_works) {
         $cmd = ($iswin) ? "for %F in (\"$file\") do @echo %~zF" : "stat -c%s \"$file\"";
@@ -2249,6 +2257,7 @@ function fm_get_size($file)
             return $size;
         }
     }
+
     // try the Windows COM interface
     if ($iswin && class_exists("COM")) {
         try {
@@ -2262,6 +2271,7 @@ function fm_get_size($file)
             return $size;
         }
     }
+
     // if all else fails
     return filesize($file);
 }
@@ -3143,7 +3153,7 @@ global $lang, $fileManagerConfig;
     <meta name="googlebot" content="noindex">
     <link rel="icon" href="<?php echo fm_enc($fileManagerConfig['favicon_path']) ?>" type="image/png">
     <title><?php echo fm_enc(APP_TITLE) ?></title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
         body.fm-login-page{background-color:#f7f9fb;font-size:14px}
         .fm-login-page .brand{width:121px;overflow:hidden;margin:0 auto;margin:40px auto;margin-bottom:0;position:relative;z-index:1}
@@ -3169,7 +3179,6 @@ global $lang, $fileManagerConfig;
     </style>
 </head>
 <body class="fm-login-page">
-<div style="visibility: hidden;"></body></div>
 <div id="wrapper" class="container-fluid">
 
     <?php
@@ -3182,9 +3191,16 @@ global $lang, $fileManagerConfig;
     {
     ?>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.slim.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
+
+<!-- remove rimon script
+
+</body>
+
+-->
+
 </html>
 <?php
 }
@@ -3214,11 +3230,11 @@ $isStickyNavBar = $fileManagerConfig['sticky_navbar'] ? 'navbar-fixed' : 'navbar
     <meta name="googlebot" content="noindex">
     <link rel="icon" href="<?php echo fm_enc($fileManagerConfig['favicon_path']) ?>" type="image/png">
     <title><?php echo fm_enc(APP_TITLE) ?></title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css" />
     <?php if (FM_USE_HIGHLIGHTJS): ?>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/<?php echo FM_HIGHLIGHTJS_STYLE ?>.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/<?php echo FM_HIGHLIGHTJS_STYLE ?>.min.css">
     <?php endif; ?>
     <style>
         body {
@@ -3272,7 +3288,6 @@ $isStickyNavBar = $fileManagerConfig['sticky_navbar'] ? 'navbar-fixed' : 'navbar
             vertical-align: middle !important;
         }
         .table .custom-checkbox-td .custom-control.custom-checkbox, .table .custom-checkbox-header .custom-control.custom-checkbox {
-            padding: 0;
             min-width: 18px;
         }
         .table-sm td, .table-sm th { padding: .4rem;}
@@ -3469,12 +3484,14 @@ $isStickyNavBar = $fileManagerConfig['sticky_navbar'] ? 'navbar-fixed' : 'navbar
             height: auto !important;
             top: 50%;
         }
+
         .ekko-lightbox-nav-overlay a{
             opacity: 1 !important;
             width: auto !important;
             text-shadow: none !important;
             color: #3B3B3B;
         }
+        
         .ekko-lightbox-nav-overlay a:hover{
             color: #20507D;
         }
@@ -3485,8 +3502,8 @@ $isStickyNavBar = $fileManagerConfig['sticky_navbar'] ? 'navbar-fixed' : 'navbar
     </style>
 </head>
 <body class="<?php echo $isStickyNavBar; ?>"> 
-<div style="visibility: hidden;"></body></div>
 <div id="wrapper" class="container-fluid">
+
     <!-- New Item creation -->
     <div class="modal fade" id="createNewItem" tabindex="-1" role="dialog" aria-label="newItemModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -3554,12 +3571,12 @@ function fm_show_footer()
 {
     ?>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js"></script>
 <?php if (FM_USE_HIGHLIGHTJS): ?>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad(); var isHighlightingEnabled = true;</script>
 <?php endif; ?>
 <script>
@@ -3629,7 +3646,6 @@ $(document).on('click', '[data-toggle="lightbox"]', function(event) {
             }
         }
     }
-
     //Check latest version
     function latest_release_info(v) {
         if(!!window.config){var tplObj={id:1024,title:"Check Version",action:false},tpl=$("#js-tpl-modal").html();
@@ -3694,13 +3710,12 @@ $(document).on('click', '[data-toggle="lightbox"]', function(event) {
         });
     });
 </script>
-
 <?php if (isset($_GET['edit']) && isset($_GET['env']) && FM_EDIT_FILE): 
         $ext = "php";
         $ext = pathinfo($_GET["edit"], PATHINFO_EXTENSION);
         ?>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ext-language_tools.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ext-language_tools.js"></script>
     <script>
         ace.require("ace/ext/language_tools");
         var editor = ace.edit("editor");
@@ -3756,6 +3771,13 @@ $(document).on('click', '[data-toggle="lightbox"]', function(event) {
     </script>
 <?php endif; ?>
 </body>
+
+<!-- remove rimon script
+
+</body>
+
+-->
+
 </html>
 <?php
 }
